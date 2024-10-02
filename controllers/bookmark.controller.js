@@ -10,14 +10,6 @@ const searchBookmark = async (req, res) => {
     }
 }
 
-const getBookmarks = async (req, res) => {
-    try {
-        const bookmarks = await Bookmark.find();
-        res.json(bookmarks);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-}
 
 const getBookmarksByUser = async (req, res) => {
     const { user } = req.params;
@@ -74,12 +66,10 @@ const deleteBookmark = async (req, res) => {
 }
 
 
-
 module.exports = {
     createBookMark,
     editBookmark,
     deleteBookmark,
-    getBookmarks,
     getBookmarksByUser,
     searchBookmark
 }  

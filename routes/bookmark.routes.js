@@ -2,15 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 const {
-   getBookmarks,
    getBookmarksByUser,
    createBookMark,
    editBookmark,
    deleteBookmark,
    searchBookmark
 } = require("../controllers/bookmark.controller");
-
-router.route("/").get(getBookmarks);
 
 router.route("/user/:user").get(getBookmarksByUser);
 
