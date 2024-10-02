@@ -26,6 +26,10 @@ jobs:
         run: npm ci
 
       - name: Deploy to Vercel Production
+        env:
+            VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_PRODUCTION }}
+            VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+            DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
         run: vercel --prod --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Notify on Telegram - Success
