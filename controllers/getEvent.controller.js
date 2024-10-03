@@ -127,8 +127,42 @@ const getMonthlyEvent = async (req, res) => {
     }
 };
 
+const getEventByMonth = async (req, res) => {
+    const { month } = req.query;
+    const adMonth = parseInt(month, 10); 
+
+    if (isNaN(adMonth) || adMonth < 1 || adMonth > 12) {
+        return res.status(400).json({ error: 'Invalid month parameter. It must be a number between 1 and 12.' });
+    }
+
+    const query = generateGraphQLQuery();
+
+    try {
+        const cacheKey = 'events_data';
+        let data = cache.get(cacheKey);
+
+        if (!data) {
+            data = await sendGraphQLRequest(query);
+            cache.set(cacheKey, data);
+        }
+
+        const nextMonth = adMonth === 12 ? 1 : adMonth + 1;
+        const combinedEvents = data.data.dates
+            .filter((date) => date.adMonth === adMonth || date.adMonth === nextMonth)
+            .map((event) => event.events.length > 0 ? event : null)
+            .filter(Boolean);
+
+        return res.json({ events: combinedEvents });
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return res.status(500).json({ error: 'Failed to fetch data' });
+    }
+};
+
+
 module.exports = {
     getEventsByQuery,
     getTodayEvent,
     getMonthlyEvent,
+    getEventByMonth
 };
