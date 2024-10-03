@@ -15,13 +15,10 @@ connectDB()
 
 const userRoute = require("./routes/User.routes.js")
 const bookmarkRoute = require("./routes/bookmark.routes.js")
-
+const eventRoutes = require("./routes/getEvent.routes.js")
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// origin: ["http://localhost:3000", "https://www.losheaven.com","https://www.cpannel.losheaven.com"],
-// methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-// allowedHeaders: ["Content-Type", "Authorization"]
 app.use(cors());
 
 
@@ -47,6 +44,7 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bookmark", bookmarkRoute);
+app.use("/api/v1/event", eventRoutes);
 
 app.get("/", (req, res) => {
   res.send("Api is running on port" + PORT);
