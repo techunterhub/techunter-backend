@@ -1,13 +1,14 @@
 const axios = require('axios');
+const NodeCache = require('node-cache');
+
+const cache = new NodeCache({ stdTTL: 600 });
 
 const sendGraphQLRequest = async (query) => {
     try {
         const response = await axios.post('https://api.saralpatro.com/graphql', { query });
-
         if (response.status !== 200) {
             throw new Error(`Error: ${response.statusText}`);
         }
-
         return response.data; 
     } catch (error) {
         throw new Error(`Error: ${error.response ? error.response.statusText : error.message}`);
@@ -35,12 +36,18 @@ const generateGraphQLQuery = () => {
     }`;
 };
 
-
 const getEventsByQuery = async (req, res) => {
     const query = generateGraphQLQuery();
     const { search } = req.query;
+
     try {
-        const data = await sendGraphQLRequest(query);
+        const cacheKey = 'events_data';
+        let data = cache.get(cacheKey);
+
+        if (!data) {
+            data = await sendGraphQLRequest(query);
+            cache.set(cacheKey, data);
+        }
 
         if (search) {
             const filteredData = data.data.dates.filter(date =>
@@ -67,7 +74,13 @@ const getTodayEvent = async (req, res) => {
     const query = generateGraphQLQuery();
 
     try {
-        const data = await sendGraphQLRequest(query);
+        const cacheKey = 'events_data';
+        let data = cache.get(cacheKey);
+
+        if (!data) {
+            data = await sendGraphQLRequest(query);
+            cache.set(cacheKey, data);
+        }
 
         const todayEvents = data.data.dates.find(date =>
             date.adDay === adDay &&
@@ -89,14 +102,21 @@ const getTodayEvent = async (req, res) => {
 const getMonthlyEvent = async (req, res) => {
     const today = new Date();
     const adMonth = today.getMonth() + 1;
+    const nextMonth = adMonth === 12 ? 1 : adMonth + 1;
 
     const query = generateGraphQLQuery();
 
     try {
-        const data = await sendGraphQLRequest(query);
+        const cacheKey = 'events_data';
+        let data = cache.get(cacheKey);
+
+        if (!data) {
+            data = await sendGraphQLRequest(query);
+            cache.set(cacheKey, data);
+        }
 
         const combinedEvents = data.data.dates
-            .filter((date) => date.adMonth === adMonth)
+            .filter((date) => date.adMonth === adMonth || date.adMonth === nextMonth)
             .map((event) => event.events.length > 0 ? event : null)
             .filter(Boolean);
 
