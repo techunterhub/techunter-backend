@@ -83,7 +83,7 @@ const getTodayEvent = asyncHandler(async (req, res) => {
         }
 
         const todayEvents = data.data.dates.find(date =>
-            date.adDay === adDay -1 &&
+            date.adDay === adDay &&
             date.adMonth === adMonth &&
             date.adYear === adYear
         );
