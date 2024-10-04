@@ -1,17 +1,15 @@
 
-const express  = require("express")
-const cors  = require("cors")
-const connectDB  = require("./config/connect")
-const cookieParser  = require("cookie-parser")
-const fileUpload  = require("express-fileupload")
-const bodyParser  = require("body-parser")
-const compression  = require("compression")
-const dotenv  = require("dotenv")
+const express = require("express")
+const cors = require("cors")
+const connectDB = require("./config/connect")
+const cookieParser = require("cookie-parser")
+const fileUpload = require("express-fileupload")
+const bodyParser = require("body-parser")
+const compression = require("compression")
+const dotenv = require("dotenv")
 dotenv.config();
 
-
-connectDB()
-
+// connectDB()
 
 const userRoute = require("./routes/User.routes.js")
 const bookmarkRoute = require("./routes/bookmark.routes.js")
@@ -20,7 +18,6 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 app.use(cors());
-
 
 app.use(cookieParser());
 

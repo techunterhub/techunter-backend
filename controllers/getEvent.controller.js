@@ -1,6 +1,6 @@
 const axios = require('axios');
 const NodeCache = require('node-cache');
-
+const asyncHandler = require('express-async-handler');
 const cache = new NodeCache({ stdTTL: 600 });
 
 const sendGraphQLRequest = async (query) => {
@@ -9,11 +9,11 @@ const sendGraphQLRequest = async (query) => {
         if (response.status !== 200) {
             throw new Error(`Error: ${response.statusText}`);
         }
-        return response.data; 
+        return response.data;
     } catch (error) {
         throw new Error(`Error: ${error.response ? error.response.statusText : error.message}`);
     }
-};
+}
 
 const generateGraphQLQuery = () => {
     const currentYear = new Date().getFullYear() + 57;
@@ -34,9 +34,9 @@ const generateGraphQLQuery = () => {
             }
         }
     }`;
-};
+}
 
-const getEventsByQuery = async (req, res) => {
+const getEventsByQuery = asyncHandler(async (req, res) => {
     const query = generateGraphQLQuery();
     const { search } = req.query;
 
@@ -63,9 +63,9 @@ const getEventsByQuery = async (req, res) => {
         console.error('Error fetching data:', error);
         return res.status(500).json({ error: 'Failed to fetch data' });
     }
-};
+})
 
-const getTodayEvent = async (req, res) => {
+const getTodayEvent = asyncHandler(async (req, res) => {
     const today = new Date();
     const adDay = today.getDate();
     const adMonth = today.getMonth() + 1;
@@ -83,13 +83,13 @@ const getTodayEvent = async (req, res) => {
         }
 
         const todayEvents = data.data.dates.find(date =>
-            date.adDay === adDay &&
+            date.adDay === adDay -1 &&
             date.adMonth === adMonth &&
             date.adYear === adYear
         );
 
-        if (todayEvents && todayEvents.events.length > 0) {
-            return res.json({ events: todayEvents.events });
+        if (todayEvents) {
+            return res.json({ events: todayEvents });
         } else {
             return res.json({ message: "No events for today." });
         }
@@ -97,9 +97,9 @@ const getTodayEvent = async (req, res) => {
         console.error('Error fetching data:', error);
         return res.status(500).json({ error: 'Failed to fetch data' });
     }
-};
+})
 
-const getMonthlyEvent = async (req, res) => {
+const getMonthlyEvent = asyncHandler(async (req, res) => {
     const today = new Date();
     const adMonth = today.getMonth() + 1;
     const nextMonth = adMonth === 12 ? 1 : adMonth + 1;
@@ -125,11 +125,11 @@ const getMonthlyEvent = async (req, res) => {
         console.error('Error fetching data:', error);
         return res.status(500).json({ error: 'Failed to fetch data' });
     }
-};
+})
 
-const getEventByMonth = async (req, res) => {
+const getEventByMonth = asyncHandler(async (req, res) => {
     const { month } = req.query;
-    const adMonth = parseInt(month, 10); 
+    const adMonth = parseInt(month, 10);
 
     if (isNaN(adMonth) || adMonth < 1 || adMonth > 12) {
         return res.status(400).json({ error: 'Invalid month parameter. It must be a number between 1 and 12.' });
@@ -151,13 +151,12 @@ const getEventByMonth = async (req, res) => {
             .filter((date) => date.adMonth === adMonth || date.adMonth === nextMonth)
             .map((event) => event.events.length > 0 ? event : null)
             .filter(Boolean);
-
         return res.json({ events: combinedEvents });
     } catch (error) {
         console.error('Error fetching data:', error);
         return res.status(500).json({ error: 'Failed to fetch data' });
     }
-};
+})
 
 
 module.exports = {
@@ -166,3 +165,4 @@ module.exports = {
     getMonthlyEvent,
     getEventByMonth
 };
+
