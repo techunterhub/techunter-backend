@@ -12,11 +12,20 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 
+const allowedOrigins = ['https://events.techunterhub.com', 'http://localhost:5173'];
+
 app.use(cors({
-  origin: 'https://events.techunterhub.com',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, origin); 
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true, 
+  credentials: true,
 }));
+
 
 // connectDB(); 
 app.use(cookieParser());
