@@ -10,6 +10,7 @@ const dotenv = require("dotenv")
 dotenv.config();
 
 // connectDB()
+app.use(cors());
 
 const userRoute = require("./routes/User.routes.js")
 const bookmarkRoute = require("./routes/bookmark.routes.js")
@@ -17,7 +18,6 @@ const eventRoutes = require("./routes/getEvent.routes.js")
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-app.use(cors());
 
 app.use(cookieParser());
 
