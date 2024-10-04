@@ -36,12 +36,58 @@ const generateGraphQLQuery = () => {
     }`;
 }
 
+const generateTwoYearGraphQLQuery = () => {
+    const currentYear = new Date().getFullYear() + 57; // Convert current AD year to BS year
+    return `
+    query {
+        firstYearEvents: dates(bsYear: ${currentYear}) {
+            bsDay
+            bsMonth
+            bsYear
+            adDay
+            adMonth
+            adYear
+            isHoliday
+            events {
+                strEn
+                strNp
+                isHoliday
+            }
+        }
+        secondYearEvents: dates(bsYear: ${currentYear + 1}) {
+            bsDay
+            bsMonth
+            bsYear
+            adDay
+            adMonth
+            adYear
+            isHoliday
+            events {
+                strEn
+                strNp
+                isHoliday
+            }
+        }
+    }`;
+}
+
+const isEventFuture = (eventDate) => {
+    const today = new Date();
+    const event = new Date(eventDate.adYear, eventDate.adMonth - 1, eventDate.adDay);
+    return event > today;
+}
+
 const getEventsByQuery = asyncHandler(async (req, res) => {
-    const query = generateGraphQLQuery();
     const { search } = req.query;
 
+    if (!search) {
+        return res.status(400).json({ error: 'Search query is required.' });
+    }
+
+    const query = generateTwoYearGraphQLQuery();
+
     try {
-        const cacheKey = 'events_data';
+        const cacheKey = 'two_year_events_data';
         let data = cache.get(cacheKey);
 
         if (!data) {
@@ -49,21 +95,30 @@ const getEventsByQuery = asyncHandler(async (req, res) => {
             cache.set(cacheKey, data);
         }
 
-        if (search) {
-            const filteredData = data.data.dates.filter(date =>
-                date.events.some(event =>
-                    event.strEn.toLowerCase().includes(search.toLowerCase())
-                )
-            );
-            return res.json({ dates: filteredData });
-        }
+        const combinedDates = [...data.data.firstYearEvents, ...data.data.secondYearEvents];
 
-        return res.json(data.data);
+        const uniqueEvents = new Set();
+        const filteredData = [];
+
+
+        combinedDates.forEach(date => {
+            date.events.forEach(event => {
+                if (event.strEn.toLowerCase().includes(search.toLowerCase()) && isEventFuture(date)) {
+                    if (!uniqueEvents.has(event?.strEn)) {
+                        uniqueEvents.add(event?.strEn);
+                        filteredData.push(date);
+                    }
+                }
+            });
+        });
+
+        return res.json({ dates: filteredData });
     } catch (error) {
         console.error('Error fetching data:', error);
         return res.status(500).json({ error: 'Failed to fetch data' });
     }
-})
+});
+
 
 const getTodayEvent = asyncHandler(async (req, res) => {
     const today = new Date();
