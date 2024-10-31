@@ -14,10 +14,10 @@ exports.addSubscriber = async (req, res) => {
     await subscriber.save();
 
     await transporter.sendMail({
-      from: 'shahbishwa21@gmail.com',
+      from: 'techunterhub@gmail.com',
       to: email,
-      subject: 'Welcome to our Newsletter!',
-      text: `Hi, thank you for subscribing to our newsletter!`,
+      subject: 'challenge subscription',
+      text: `Hi, thank you for participating in the challenge!`,
     });
 
     res.status(201).json({ message: 'Subscription successful' });
@@ -28,14 +28,15 @@ exports.addSubscriber = async (req, res) => {
 
 exports.sendNewsletter = async (req, res) => {
   try {
+    const message = req.body.message;
     const subscribers = await Subscriber.find();
     const emails = subscribers.map(sub => sub.email);
 
     await transporter.sendMail({
-      from: 'shahbishwa21@gmail.com',
+      from: 'techunterhub@gmail.com',
       to: emails,
       subject: 'Our Latest Newsletter!',
-      text: 'Here’s our latest news!',
+      text: message,
     });
 
     res.status(200).json({ message: 'Newsletter sent' });

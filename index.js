@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 
-const allowedOrigins = ['https://events.techunterhub.com', 'http://localhost:5173'];
+const allowedOrigins = ['https://events.techunterhub.com', 'http://localhost:5173',"https://techunterhub.com"];
 
 app.use(cors({
   origin: (origin, callback) => {
