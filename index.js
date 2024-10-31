@@ -27,7 +27,7 @@ app.use(cors({
 }));
 
 
-// connectDB(); 
+connectDB(); 
 app.use(cookieParser());
 app.use(fileUpload({ useTempFiles: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,7 +39,9 @@ app.use(express.urlencoded({ limit: "50mb", extended: true }));
 const userRoute = require("./routes/User.routes.js");
 const bookmarkRoute = require("./routes/bookmark.routes.js");
 const eventRoutes = require("./routes/getEvent.routes.js");
-
+const newsletter = require("./routes/newsletter.js");
+ 
+app.use("/api/v1/newsletter", newsletter);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bookmark", bookmarkRoute);
 app.use("/api/v1/event", eventRoutes);
