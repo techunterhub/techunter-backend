@@ -27,20 +27,23 @@ exports.addSubscriber = async (req, res) => {
 };
 
 exports.sendNewsletter = async (req, res) => {
-  try {
-    const message = req.body.message;
-    const subscribers = await Subscriber.find();
-    const emails = subscribers.map(sub => sub.email);
-
-    await transporter.sendMail({
-      from: 'techunterhub@gmail.com',
-      to: emails,
-      subject: 'Our Latest Newsletter!',
-      text: message,
-    });
-
-    res.status(200).json({ message: 'Newsletter sent' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error sending newsletter', error });
-  }
-};
+    try {
+      const message = req.body.message;
+      const subscribers = await Subscriber.find();
+      const emailPromises = subscribers.map(sub =>
+        transporter.sendMail({
+          from: 'techunterhub@gmail.com',
+          to: sub.email,
+          subject: 'chellenge update',
+          text: message,
+        })
+      );
+  
+      await Promise.all(emailPromises); 
+  
+      res.status(200).json({ message: 'Newsletter sent' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error sending newsletter', error });
+    }
+  };
+  
