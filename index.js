@@ -1,3 +1,5 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/connect");
@@ -5,8 +7,7 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const compression = require("compression");
-const dotenv = require("dotenv");
-dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -40,12 +41,12 @@ const userRoute = require("./routes/User.routes.js");
 const bookmarkRoute = require("./routes/bookmark.routes.js");
 const eventRoutes = require("./routes/getEvent.routes.js");
 const newsletter = require("./routes/newsletter.js");
- 
+ const registerEvent = require("./routes/registerUser.routes.js");
 app.use("/api/v1/newsletter", newsletter);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bookmark", bookmarkRoute);
 app.use("/api/v1/event", eventRoutes);
-
+app.use("/api/v1/registerUser",registerEvent)
 app.get("/", (req, res) => {
   res.send("API is running on port " + PORT);
 });
