@@ -41,16 +41,16 @@ const userRoute = require("./routes/User.routes.js");
 const bookmarkRoute = require("./routes/bookmark.routes.js");
 const eventRoutes = require("./routes/getEvent.routes.js");
 const newsletter = require("./routes/newsletter.js");
- const registerEvent = require("./routes/registerUser.routes.js");
+ const registerEvent = require("./routes/event.routes.js");
 app.use("/api/v1/newsletter", newsletter);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bookmark", bookmarkRoute);
 app.use("/api/v1/event", eventRoutes);
-app.use("/api/v1/registerUser",registerEvent)
+app.use("/api/v2/event",registerEvent)
 app.get("/", (req, res) => {
   res.send("API is running on port " + PORT);
 });
 
 app.listen(PORT, async () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port http://localhost:${PORT}`);
 });
