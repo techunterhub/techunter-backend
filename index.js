@@ -7,14 +7,23 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const compression = require("compression");
-const helmet = require("helmet")
+const helmet = require("helmet");
+const limit = require("express-rate-limit");
+const limiter = limit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 10, // limit each IP to 10 requests per windowMs
+  message: 'Too many requests, please try again after a minute.'
+});
 
+// Apply rate limiting to all requests
 const app = express();
+app.use(limiter);
 const PORT = process.env.PORT || 8000;
 
 
 const allowedOrigins = ['https://events.techunterhub.com', 'http://localhost:5173',"https://techunterhub.com"];
-app.use(helmet())
+app.use(helmet());
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -53,4 +62,8 @@ app.get("/", (req, res) => {
 
 app.listen(PORT, async () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port http://localhost:${PORT}`);
+
 });
+
+
+
