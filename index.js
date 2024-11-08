@@ -7,14 +7,14 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const compression = require("compression");
-
+const helmet = require("helmet")
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 
 const allowedOrigins = ['https://events.techunterhub.com', 'http://localhost:5173',"https://techunterhub.com"];
-
+app.use(helmet())
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
@@ -41,16 +41,16 @@ const userRoute = require("./routes/User.routes.js");
 const bookmarkRoute = require("./routes/bookmark.routes.js");
 const eventRoutes = require("./routes/getEvent.routes.js");
 const newsletter = require("./routes/newsletter.js");
- const registerEvent = require("./routes/registerUser.routes.js");
+ const registerEvent = require("./routes/event.routes.js");
 app.use("/api/v1/newsletter", newsletter);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bookmark", bookmarkRoute);
 app.use("/api/v1/event", eventRoutes);
-app.use("/api/v1/registerUser",registerEvent)
+app.use("/api/v2/event",registerEvent)
 app.get("/", (req, res) => {
   res.send("API is running on port " + PORT);
 });
 
 app.listen(PORT, async () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port http://localhost:${PORT}`);
 });
