@@ -15,6 +15,7 @@ const {
     admin,
     protect
 } = require("../middlewares/auth.middlewares");
+
 const User = require("../models/user.models");
 
 
