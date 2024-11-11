@@ -9,12 +9,12 @@ const bodyParser = require("body-parser");
 const compression = require("compression");
 const helmet = require("helmet");
 const limit = require("express-rate-limit");
-const routes = require("./routes/index");
+const routes = require("./routes/index.js");
 
 
 const limiter = limit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // limit each IP to 10 requests per windowMs
+  max: 15, // limit each IP to 10 requests per windowMs
   message: "Too many requests, please try again after a minute.",
 });
 
@@ -53,11 +53,12 @@ app.use(compression());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-routes();
+
+routes(app)
+
 
 app.listen(PORT, async () => {
   console.log(
     `Server running in ${process.env.NODE_ENV} mode on port http://localhost:${PORT}`
   );
 });
-
