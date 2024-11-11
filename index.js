@@ -1,3 +1,6 @@
+
+require('dotenv').config();
+
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/connect");
@@ -40,12 +43,14 @@ const userRoute = require("./routes/User.routes.js");
 const bookmarkRoute = require("./routes/bookmark.routes.js");
 const eventRoutes = require("./routes/getEvent.routes.js");
 const newsletter = require("./routes/newsletter.js");
- 
+const eventdetail= require('./routes/eventdetail.routes.js'); //----------
+
+
 app.use("/api/v1/newsletter", newsletter);
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/bookmark", bookmarkRoute);
 app.use("/api/v1/event", eventRoutes);
-
+app.use("/api/v1/detail",eventdetail); //--------
 app.get("/", (req, res) => {
   res.send("API is running on port " + PORT);
 });
