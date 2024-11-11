@@ -1,32 +1,34 @@
 const User = require('../models/user.models');
 const bcrypt = require('bcryptjs');
 const generateToken = require('../utility/jwt');
+const asyncHadler = require('express-async-handler');
+const mongooseValidate = require('../utility/customError');
 
-const Register = async (req, res) => {
-  try {
-    const { email, password, username } = req.body;
+const Register = asyncHadler(async (req, res) => {
+  const { email, password, username } = req.body;
 
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = new User({
-      email,
-      password: hashedPassword,
-      username,
-      role
-    });
-
-    await newUser.save();
-    res.json(newUser);
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: 'internal server error' });
+  const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+  if (existingUser) {
+    return res.status(400).json({ message: "User already exists" });
   }
-};
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = new User({
+    email,
+    password: hashedPassword,
+    username
+  });
+
+  try {
+    const validatedUser = mongooseValidate(newUser);
+    await validatedUser.save();
+    res.json(validatedUser);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 
 const login = async (req, res) => {
   try {
@@ -43,8 +45,9 @@ const login = async (req, res) => {
 
     const token = generateToken(user._id);
     res.json(
-      { access: token,
-        data:user._id
+      {
+        access: token,
+        data: user._id
       });
   } catch (error) {
     console.error(error);
@@ -76,7 +79,7 @@ const getUser = async (req, res) => {
 const adminStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findByIdAndUpdate(id, { isadmin: true,role:'admin' }, { new: true });
+    const user = await User.findByIdAndUpdate(id, { isadmin: true, role: 'admin' }, { new: true });
     res.json(user);
   } catch (error) {
     console.error(error);

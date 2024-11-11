@@ -6,16 +6,15 @@ const eventRoutes = require("./getEvent.routes.js");
 const newsletter = require("./newsletter.js");
  const registerEvent = require("./event.routes.js");
 
- const routes = ()=>{
+ const routes = (app)=>{
     app.use("/api/v1/newsletter", newsletter);
     app.use("/api/v1/user", userRoute);
     app.use("/api/v1/bookmark", bookmarkRoute);
     app.use("/api/v1/event", eventRoutes);
     app.use("/api/v2/event",registerEvent)
     app.get("/", (req, res) => {
-      res.send("API is running on port " + PORT);
+      res.send("API is running on port 8000");
     });
-    
  }
 
 module.exports = routes
