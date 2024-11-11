@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const validateRequestWithSchema = require("../utility/customError");
+
 const {
     Register,
     adminStatus,
@@ -13,9 +15,10 @@ const {
     admin,
     protect
 } = require("../middlewares/auth.middlewares");
+const User = require("../models/user.models");
 
 
-router.route("/register").post(Register);
+router.route("/register").post(validateRequestWithSchema(User.schema),Register);
 
 router.route("/login").post(login);
 

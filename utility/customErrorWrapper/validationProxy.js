@@ -1,33 +1,57 @@
-/**
- * Extracts validation rules from a Mongoose schema object.
- *
- * @param {Object} schema - The Mongoose schema object containing path definitions.
- * @throws {Error} Throws an error if the schema object is invalid.
- * @returns {Object} An object containing validation rules for each path in the schema.
- *                   Each path includes properties like required, unique, match, min,
- *                   max, minlength, maxlength, and default.
- */
+const Joi = require('joi');
+
 function extractValidationRules(schema) {
-    if (!schema || !schema.paths) {
-        throw new Error("Invalid schema object passed to extractValidationRules. Ensure that modelInstance.schema is valid.");
+  const rules = {};
+
+  for (const path in schema.paths) {
+    const pathOptions = schema.paths[path].options;
+    let rule = Joi.any(); 
+
+    if (pathOptions.required) {
+      rule = rule.required();
     }
 
-    const rules = {};
-    for (const path in schema.paths) {
-        const pathOptions = schema.paths[path].options;
-
-        rules[path] = {
-            required: pathOptions.required,
-            unique: pathOptions.unique,
-            match: pathOptions.match,
-            min: pathOptions.min,
-            max: pathOptions.max,
-            minlength: pathOptions.minlength,
-            maxlength: pathOptions.maxlength,
-            default: pathOptions.default,
-        };
+    if (pathOptions.type === String) {
+      rule = Joi.string();
+      if (pathOptions.minlength) rule = rule.min(pathOptions.minlength); 
+      if (pathOptions.maxlength) rule = rule.max(pathOptions.maxlength); 
+      if (pathOptions.match) rule = rule.pattern(pathOptions.match);
     }
-    return rules;
+
+    if (pathOptions.type === Number) {
+      rule = Joi.number(); 
+      if (pathOptions.min) rule = rule.min(pathOptions.min); 
+      if (pathOptions.max) rule = rule.max(pathOptions.max); 
+    }
+
+    if (pathOptions.type === Boolean) {
+      rule = Joi.boolean();
+    }
+
+    if (pathOptions.type === Date) {
+      rule = Joi.date();
+    }
+
+    if (pathOptions.type === Array) {
+      rule = Joi.array();
+      if (pathOptions.minlength) rule = rule.min(pathOptions.minlength); 
+      if (pathOptions.maxlength) rule = rule.max(pathOptions.maxlength); 
+    }
+
+    if (pathOptions.type === Object) {
+      rule = Joi.object();
+    }
+
+    if (pathOptions.enum) {
+      rule = rule.valid(...pathOptions.enum); 
+    }
+
+    rules[path] = rule; 
+  }
+
+
+  return Joi.object(rules); 
 }
 
 module.exports = { extractValidationRules };
+
