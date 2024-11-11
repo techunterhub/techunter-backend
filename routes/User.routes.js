@@ -20,13 +20,13 @@ const User = require("../models/user.models");
 
 router.route("/register").post(validateRequestWithSchema(User.schema),Register);
 
-router.route("/login").post(login);
+router.route("/login").post(validateRequestWithSchema(User.schema),login);
 
-router.route("/profile").get(protect, admin(["admin", "superadmin"]), getUser);
+router.route("/profile").get(protect, admin(["admin", "superadmin"]),validateRequestWithSchema(User.schema), getUser);
 
-router.route("/profile/:id").get(protect, admin(["admin", "superadmin"]), getUserById);
+router.route("/profile/:id").get(protect, admin(["admin", "superadmin"]),validateRequestWithSchema(User.schema), getUserById);
 
 
-router.route("/change-status/:id").patch(protect, admin(["superadmin"]), adminStatus);
+router.route("/change-status/:id").patch(protect, admin(["superadmin"]),validateRequestWithSchema(User.schema), adminStatus);
 
 module.exports = router;
