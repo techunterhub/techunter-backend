@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const express = require("express");
 const cors = require("cors");
-const connectDB = require("./config/connect");
+// const connectDB = require("./config/connect");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
