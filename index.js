@@ -45,7 +45,7 @@ app.use(
   })
 );
 
-connectDB();
+// connectDB();
 app.use(cookieParser());
 app.use(fileUpload({ useTempFiles: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
