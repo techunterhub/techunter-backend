@@ -31,7 +31,7 @@ const allowedOrigins = [
 ];
 app.use(helmet());
 
-app.use(
+app.use(   
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.indexOf(origin) !== -1) {
